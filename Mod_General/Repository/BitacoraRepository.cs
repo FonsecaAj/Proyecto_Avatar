@@ -18,8 +18,7 @@ namespace Mod_General.Repository
         {
             using (var connection = _dbConnectionFactory.CreateConnection())
             {
-                var sql = @"INSERT INTO Bitacora 
-                            (Fecha_Registro, Usuario, Descripcion, Tipo_Accion)
+                var sql = @"INSERT INTO Bitacora (Fecha_Registro, Usuario, Descripcion, Tipo_Accion)
                             VALUES (GETDATE(), @Usuario, @Descripcion, @Tipo_Accion);
                             SELECT SCOPE_IDENTITY();";
 

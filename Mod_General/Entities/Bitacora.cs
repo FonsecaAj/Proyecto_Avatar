@@ -6,13 +6,13 @@
         public DateTime Fecha_Registro { get; set; }
         public string Usuario { get; set; } = string.Empty;
         public string Descripcion { get; set; } = string.Empty;
-        public string Tipo_Accion { get; set; } = string.Empty;
+        public string? Tipo_Accion { get; set; } // 🔹 ahora es opcional (nullable)
     }
 
     public class BitacoraRequest
     {
         public string Usuario { get; set; } = string.Empty;
-        public string Tipo_Accion { get; set; } = string.Empty; // "INSERT", "UPDATE", "DELETE", "SELECT", "ERROR"
+        public string? Tipo_Accion { get; set; }// "INSERT", "UPDATE", "DELETE", "SELECT", "ERROR"
         public string Descripcion { get; set; } = string.Empty; // JSON o texto
     }
 

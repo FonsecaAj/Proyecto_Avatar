@@ -17,19 +17,12 @@ namespace Mod_General.Services
         {
             try
             {
-                // Validaciones requeridas
+                // 🧩 Validaciones requeridas
                 if (string.IsNullOrWhiteSpace(request.Usuario))
                     return new BusinessLogicResponse
                     {
                         StatusCode = 400,
                         Message = "El campo 'Usuario' es requerido y no puede estar vacío."
-                    };
-
-                if (string.IsNullOrWhiteSpace(request.Tipo_Accion))
-                    return new BusinessLogicResponse
-                    {
-                        StatusCode = 400,
-                        Message = "El campo 'Tipo_Accion' es requerido y no puede estar vacío."
                     };
 
                 if (string.IsNullOrWhiteSpace(request.Descripcion))
@@ -39,27 +32,32 @@ namespace Mod_General.Services
                         Message = "El campo 'Descripción' es requerida y no puede estar vacía."
                     };
 
-                // Validación del formato JSON (CRUD)
-                if (request.Tipo_Accion.ToUpper() != "SELECT" && !IsValidJson(request.Descripcion))
+                // "INSERT"
+                var tipoAccion = string.IsNullOrWhiteSpace(request.Tipo_Accion)
+                    ? "INSERT"
+                    : request.Tipo_Accion.Trim().ToUpper();
+
+                // Validar formato JSON solo para operaciones CRUD (no SELECT ni GENERICA)
+                if (tipoAccion != "SELECT" && tipoAccion != "GENERICA" && !IsValidJson(request.Descripcion))
                     return new BusinessLogicResponse
                     {
                         StatusCode = 400,
                         Message = "El campo 'Descripción' debe tener un formato JSON válido para operaciones de tipo INSERT, UPDATE o DELETE."
                     };
 
-                // Construir entidad
+                // Construir entidad Bitácora
                 var bitacora = new Bitacora
                 {
                     Usuario = request.Usuario.Trim(),
-                    Tipo_Accion = request.Tipo_Accion.Trim().ToUpper(),
+                    Tipo_Accion = tipoAccion,
                     Descripcion = request.Descripcion.Trim(),
                     Fecha_Registro = DateTime.Now
                 };
 
-                // Registrar bitácora usando la sintaxis estándar
+                // Registrar bitácora
                 var id = await _bitacoraRepository.Registrar(bitacora);
 
-                // Respuesta
+                
                 return new BusinessLogicResponse
                 {
                     StatusCode = 201,
@@ -75,7 +73,7 @@ namespace Mod_General.Services
             }
             catch (Exception ex)
             {
-                // Manejo de errores técnicos
+                // Manejo de errores 
                 return new BusinessLogicResponse
                 {
                     StatusCode = 500,
@@ -84,7 +82,7 @@ namespace Mod_General.Services
             }
         }
 
-        // Método auxiliar para validar JSON
+        // Método auxiliar para validar si la descripción es JSON válido
         private bool IsValidJson(string str)
         {
             try
