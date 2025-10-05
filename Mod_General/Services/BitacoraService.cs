@@ -17,7 +17,7 @@ namespace Mod_General.Services
         {
             try
             {
-                // 🧩 Validaciones requeridas
+                // Validaciones requeridas
                 if (string.IsNullOrWhiteSpace(request.Usuario))
                     return new BusinessLogicResponse
                     {
