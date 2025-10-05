@@ -6,7 +6,7 @@
         public DateTime Fecha_Registro { get; set; }
         public string Usuario { get; set; } = string.Empty;
         public string Descripcion { get; set; } = string.Empty;
-        public string? Tipo_Accion { get; set; } // 🔹 ahora es opcional (nullable)
+        public string? Tipo_Accion { get; set; } // (nullable)
     }
 
     public class BitacoraRequest
