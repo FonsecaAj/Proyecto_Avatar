@@ -46,11 +46,12 @@ namespace Adm_Notas.Repository
             using (var connection = _dbConnectionFactory.CreateConnection())
             {
                 var sql = @"
-                    SELECT n.ID_Nota, n.ID_Estudiante, n.ID_Rubro, n.Valor_Nota
-                    FROM Nota n
-                    INNER JOIN Rubro r ON n.ID_Rubro = r.ID_Rubro
-                    INNER JOIN Grupo g ON r.ID_Grupo = g.ID_Grupo
-                    WHERE n.ID_Estudiante = @ID_Estudiante AND g.ID_Curso = @ID_Curso;";
+                SELECT n.ID_Nota, n.ID_Estudiante, n.ID_Rubro, n.Valor_Nota
+                FROM Nota n
+                INNER JOIN Rubro r ON n.ID_Rubro = r.ID_Rubro
+                INNER JOIN Grupo g ON r.ID_Grupo = g.ID_Grupo
+                INNER JOIN Matricula m ON m.ID_Grupo = g.ID_Grupo AND m.ID_Estudiante = n.ID_Estudiante
+                WHERE n.ID_Estudiante = @ID_Estudiante AND g.ID_Curso = @ID_Curso;";
 
                 return await connection.QueryAsync<Nota>(sql, new
                 {
