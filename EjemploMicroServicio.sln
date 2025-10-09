@@ -19,7 +19,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Estudiantes_Matriculados", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Adm_Facturacion", "Adm_Facturacion\Adm_Facturacion.csproj", "{EC48B90B-0BF8-49D4-BC3E-273D90E5DD48}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ADM_Pagos", "ADM_Pagos\ADM_Pagos.csproj", "{028E1F0E-2B3D-43A0-8ACE-C64FDAAD6FC0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Adm_Pagos", "ADM_Pagos\Adm_Pagos.csproj", "{028E1F0E-2B3D-43A0-8ACE-C64FDAAD6FC0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Adm_Notificaciones", "Adm_Notificaciones\Adm_Notificaciones.csproj", "{B640E345-87C9-4585-A5B9-53D1AFDCED7F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -63,6 +65,10 @@ Global
 		{028E1F0E-2B3D-43A0-8ACE-C64FDAAD6FC0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{028E1F0E-2B3D-43A0-8ACE-C64FDAAD6FC0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{028E1F0E-2B3D-43A0-8ACE-C64FDAAD6FC0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B640E345-87C9-4585-A5B9-53D1AFDCED7F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B640E345-87C9-4585-A5B9-53D1AFDCED7F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B640E345-87C9-4585-A5B9-53D1AFDCED7F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B640E345-87C9-4585-A5B9-53D1AFDCED7F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
