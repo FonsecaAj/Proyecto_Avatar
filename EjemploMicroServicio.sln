@@ -7,9 +7,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EjemploMicroServicio", "Eje
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mod_Academico", "Mod_Academico\Mod_Academico.csproj", "{2DBDAB15-537A-453E-98AE-06C80FBFB517}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mod_Matricula", "Mod_Matricula\Mod_Matricula.csproj", "{76985CCA-85AD-4A96-A724-E2E66076905F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Adm_Direcciones", "Mod_Matricula\Adm_Direcciones.csproj", "{76985CCA-85AD-4A96-A724-E2E66076905F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mod_General", "Mod_General\Mod_General.csproj", "{CD6A080B-6D01-4A94-8DF0-C0EC0E0930C0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Adm_Notas", "Adm_Notas\Adm_Notas.csproj", "{6563F3DF-8A83-4D71-AA61-76BFB12D725A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{CD6A080B-6D01-4A94-8DF0-C0EC0E0930C0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CD6A080B-6D01-4A94-8DF0-C0EC0E0930C0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CD6A080B-6D01-4A94-8DF0-C0EC0E0930C0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6563F3DF-8A83-4D71-AA61-76BFB12D725A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6563F3DF-8A83-4D71-AA61-76BFB12D725A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6563F3DF-8A83-4D71-AA61-76BFB12D725A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6563F3DF-8A83-4D71-AA61-76BFB12D725A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
