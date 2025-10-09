@@ -161,20 +161,14 @@ namespace Adm_Notificaciones.Service
 </head>
 <body>
     <div class='container'>
-        <div class='header'>
-            <img src='https://i.imgur.com/Jv2eP5B.png' class='logo' alt='Avatar Logo'/>
-            <h1>Sistema Avatar</h1>
-        </div>
         <div class='content'>
             <h2>{titulo}</h2>
             <p>{mensaje}</p>
             <p>Este mensaje ha sido generado automáticamente por el módulo de notificaciones del <strong>Sistema Avatar</strong>.</p>
-            <p>Por favor, no respondas a este correo.</p>
-            <a href='https://avatar.cuc.ac.cr' class='cta'>Ir al Portal Avatar</a>
         </div>
         <div class='footer'>
-            © {DateTime.Now.Year} Sistema Avatar - Todos los derechos reservados.<br/>
-            Universidad CUC · Tecnología e Innovación
+            © {DateTime.Now.Year} Sistema Avatar - Los Hokages.<br/>
+             CUC · Programación V
         </div>
     </div>
 </body>

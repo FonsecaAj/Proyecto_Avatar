@@ -16,8 +16,9 @@ builder.Services.AddSingleton<IDbConnectionFactory, DbConnectionFactory>();
 builder.Services.AddScoped<ListadoRepository>();
 builder.Services.AddScoped<IEstudiantesService, ListadoService>();
 
-// Ya registrados antes:
-//builder.Services.AddHttpClient<IAutenticacionService, AutenticacionService>();
+builder.Services.AddHttpClient<IAutenticacionService, AutenticacionService>();
+builder.Configuration["AutenticacionApiUrl"] = "http://localhost:5233";
+
 builder.Services.AddHttpClient<BitacoraConsumer>();
 
 

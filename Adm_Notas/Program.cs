@@ -1,3 +1,4 @@
+using Adm_Direcciones.Services;
 using Adm_Notas;
 using Adm_Notas.Entities;
 using Adm_Notas.Repository;
@@ -18,9 +19,13 @@ builder.Services.AddScoped<NotaRepository>();
 builder.Services.AddScoped<IRubroServices, RubroServices>();
 builder.Services.AddScoped<INotasServices, NotaService>();
 
-// ==== Bitácora (para microservicio GEN1) ====
+// ==== Bitácora ====
 builder.Services.AddHttpClient<BitacoraConsumer>();
-builder.Configuration["BitacoraService:BaseUrl"] = "http://localhost:5293"; // cambia el puerto al de tu servicio GEN1
+builder.Configuration["BitacoraService:BaseUrl"] = "http://localhost:5293"; // GEN1
+
+// ==== Autenticación (USR5) ====
+builder.Services.AddHttpClient<IAutenticacionService, AutenticacionService>();
+builder.Configuration["AutenticacionApiUrl"] = "http://localhost:5233"; // USR5
 
 var app = builder.Build();
 
