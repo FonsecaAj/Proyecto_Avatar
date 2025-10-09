@@ -210,6 +210,29 @@ app.MapGet("/parametro/{id}", async (
 .WithName("ObtenerParametroPorId")
 .WithOpenApi();
 
+
+app.MapGet("/parametro/public/{id}", async (
+    string id,
+    IParametroRepository repository) =>
+{
+    // Lista de parámetros que pueden consultarse públicamente (solo configuración del sistema)
+    var parametrosPermitidos = new[] { "JWTEXPMIN", "REFEXPMIN" };
+
+    var idUpper = id.ToUpper();
+    if (!parametrosPermitidos.Contains(idUpper))
+        return Results.NotFound(new { error = "Parámetro no disponible públicamente" });
+
+    var parametro = await repository.ObtenerPorIdAsync(idUpper);
+
+    if (parametro == null)
+        return Results.NotFound(new { error = "Parámetro no encontrado" });
+
+    return Results.Ok(parametro);
+})
+.WithName("ObtenerParametroPublico")
+.WithOpenApi()
+.WithTags("Público");
+
 app.Run();
 
 static (bool esValido, string mensaje) ValidarParametro(string idParametro, string valor)

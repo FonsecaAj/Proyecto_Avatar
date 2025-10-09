@@ -15,7 +15,6 @@ builder.Services.ConfigureHttpJsonOptions(options =>
     options.SerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.SnakeCaseLower;
 });
 
-
 builder.Services.AddScoped<IAutenticacionRepository, AutenticacionRepository>();
 builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
 builder.Services.AddHttpClient<IParametroService, ParametroService>();
@@ -58,11 +57,12 @@ app.MapPost("/login", async (
         var jwtExpiracionMinutos = await parametroService.ObtenerTiempoExpiracionJwtAsync();
         var refreshExpiracionMinutos = await parametroService.ObtenerTiempoExpiracionRefreshAsync();
 
-        var jwtToken = jwtService.GenerarJwtToken(usuario, jwtExpiracionMinutos);
-        var refreshToken = jwtService.GenerarRefreshToken();
-
         var ahora = DateTime.UtcNow;
         var horaVencimiento = ahora.AddMinutes(jwtExpiracionMinutos);
+
+
+        var jwtToken = jwtService.GenerarJwtToken(usuario, jwtExpiracionMinutos);
+        var refreshToken = jwtService.GenerarRefreshToken();
 
         await repository.CrearJwtTokenAsync(new JwtToken
         {
@@ -88,6 +88,8 @@ app.MapPost("/login", async (
             $"Usuario inició sesión - {JsonSerializer.Serialize(loginInfo)}"
         );
 
+        Console.WriteLine($"Login exitoso para {usuario}");
+
         return Results.Created("/login", new LoginResponse
         {
             ExpiresIn = horaVencimiento,
@@ -99,6 +101,7 @@ app.MapPost("/login", async (
     catch (Exception ex)
     {
         Console.WriteLine($"Error en login: {ex.Message}");
+        Console.WriteLine($"StackTrace: {ex.StackTrace}");
         return Results.Json(new { error = "Error interno del servidor" }, statusCode: 500);
     }
 })
@@ -122,6 +125,7 @@ app.MapPost("/refresh", async (
 
         if (tokenExistente == null || !tokenExistente.Activo || tokenExistente.FechaExpiracion < DateTime.UtcNow)
         {
+            Console.WriteLine($"⚠Refresh token invalido o expirado");
             return Results.Json(new { error = "No autorizado" }, statusCode: 401);
         }
 
@@ -136,6 +140,8 @@ app.MapPost("/refresh", async (
 
         var ahora = DateTime.UtcNow;
         var horaVencimiento = ahora.AddMinutes(jwtExpiracionMinutos);
+
+        Console.WriteLine($"Token renovado para {tokenExistente.UsuarioEmail}. Expira en {jwtExpiracionMinutos} minutos");
 
         await repository.CrearJwtTokenAsync(new JwtToken
         {
@@ -187,6 +193,7 @@ app.MapPost("/validate", async (
     {
         if (string.IsNullOrWhiteSpace(request.Token))
         {
+            Console.WriteLine("Token vacío en validación");
             return Results.Json(false, statusCode: 401);
         }
 
@@ -194,6 +201,7 @@ app.MapPost("/validate", async (
 
         if (!jwtValido)
         {
+            Console.WriteLine("Token JWT inválido");
             return Results.Json(false, statusCode: 401);
         }
 
@@ -201,14 +209,20 @@ app.MapPost("/validate", async (
 
         if (tokenBd == null)
         {
+            Console.WriteLine("Token no encontrado en BD");
             return Results.Json(false, statusCode: 401);
         }
 
-        if (!tokenBd.Activo || tokenBd.FechaExpiracion < DateTime.UtcNow)
+        var ahora = DateTime.UtcNow;
+        var minutosRestantes = (tokenBd.FechaExpiracion - ahora).TotalMinutes;
+
+        if (!tokenBd.Activo || tokenBd.FechaExpiracion < ahora)
         {
+            Console.WriteLine("Token inactivo o expirado");
             return Results.Json(false, statusCode: 401);
         }
 
+        Console.WriteLine($"Token válido para {tokenBd.UsuarioEmail}");
         return Results.Ok(true);
     }
     catch (Exception ex)

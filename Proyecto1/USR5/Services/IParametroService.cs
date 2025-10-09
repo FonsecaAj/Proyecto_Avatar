@@ -21,19 +21,29 @@
         {
             try
             {
-                var response = await _httpClient.GetAsync($"{_parametroApiUrl}/parametro/JWTEXPMIN");
+                // Usar endpoint público que no requiere autenticación
+                var response = await _httpClient.GetAsync($"{_parametroApiUrl}/parametro/public/JWTEXPMIN");
+
                 if (!response.IsSuccessStatusCode)
-                    return 5;
+                {
+                    Console.WriteLine($"No se pudo obtener JWTEXPMIN. Status: {response.StatusCode}");
+                    return 30;
+                }
 
                 var parametro = await response.Content.ReadFromJsonAsync<ParametroDto>();
+
                 if (parametro == null || !int.TryParse(parametro.Valor, out int minutos))
-                    return 5;
+                {
+                    Console.WriteLine($"Formato de JWTEXPMIN inválido");
+                    return 30;
+                }
 
                 return minutos;
             }
-            catch
+            catch (Exception ex)
             {
-                return 5;
+                Console.WriteLine($"Error al obtener JWTEXPMIN: {ex.Message}.");
+                return 30;
             }
         }
 
@@ -41,19 +51,30 @@
         {
             try
             {
-                var response = await _httpClient.GetAsync($"{_parametroApiUrl}/parametro/REFEXPMIN");
+                // Usar endpoint público que no requiere autenticación
+                var response = await _httpClient.GetAsync($"{_parametroApiUrl}/parametro/public/REFEXPMIN");
+
                 if (!response.IsSuccessStatusCode)
-                    return 60;
+                {
+                    Console.WriteLine($"No se pudo obtener REFEXPMIN. Status: {response.StatusCode}.");
+                    return 1440;
+                }
 
                 var parametro = await response.Content.ReadFromJsonAsync<ParametroDto>();
-                if (parametro == null || !int.TryParse(parametro.Valor, out int minutos))
-                    return 60;
 
+                if (parametro == null || !int.TryParse(parametro.Valor, out int minutos))
+                {
+                    Console.WriteLine($"Formato de REFEXPMIN inválido.");
+                    return 1440;
+                }
+
+                Console.WriteLine($"REFEXPMIN obtenido: {minutos} minutos");
                 return minutos;
             }
-            catch
+            catch (Exception ex)
             {
-                return 60;
+                Console.WriteLine($"Error al obtener REFEXPMIN: {ex.Message}.");
+                return 1440;
             }
         }
     }
