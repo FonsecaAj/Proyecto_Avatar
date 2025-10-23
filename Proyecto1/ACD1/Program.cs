@@ -46,13 +46,18 @@ app.MapPost("/institucion", async (
 
     var id = await repository.CrearAsync(institucion);
 
+    // Obtener el registro completo con las fechas generadas
+    var institucionCreada = await repository.ObtenerPorIdAsync(id);
+
     var nuevoRegistro = new
     {
-        IdInstitucion = id,
-        institucion.Nombre
+        institucionCreada.IdInstitucion,
+        institucionCreada.Nombre,
+        institucionCreada.FechaCreacion,
+        institucionCreada.FechaModificacion,
+        institucionCreada.Activo
     };
 
-    // Obtener usuario del token
     var usuario = await autenticacionService.ObtenerUsuarioDelTokenAsync(authorization) ?? "sistema";
 
     await bitacoraService.RegistrarAsync(
@@ -60,7 +65,7 @@ app.MapPost("/institucion", async (
         $"Institución creada - {JsonSerializer.Serialize(nuevoRegistro)}"
     );
 
-    return Results.Created($"/institucion/{id}", new { idInstitucion = id, nombre = institucion.Nombre });
+    return Results.Created($"/institucion/{id}", institucionCreada);
 })
 .WithName("CrearInstitucion")
 .WithOpenApi();
@@ -88,7 +93,10 @@ app.MapPut("/institucion/{id}", async (
     var registroAnterior = new
     {
         institucionExistente.IdInstitucion,
-        institucionExistente.Nombre
+        institucionExistente.Nombre,
+        institucionExistente.FechaCreacion,
+        institucionExistente.FechaModificacion,
+        institucionExistente.Activo
     };
 
     var institucion = new Institucion
@@ -99,13 +107,18 @@ app.MapPut("/institucion/{id}", async (
 
     await repository.ActualizarAsync(institucion);
 
+    // Obtener el registro completo actualizado
+    var institucionActualizada = await repository.ObtenerPorIdAsync(id);
+
     var registroActual = new
     {
-        institucion.IdInstitucion,
-        institucion.Nombre
+        institucionActualizada.IdInstitucion,
+        institucionActualizada.Nombre,
+        institucionActualizada.FechaCreacion,
+        institucionActualizada.FechaModificacion,
+        institucionActualizada.Activo
     };
 
-    // Obtener usuario del token
     var usuario = await autenticacionService.ObtenerUsuarioDelTokenAsync(authorization) ?? "sistema";
 
     await bitacoraService.RegistrarAsync(
@@ -113,7 +126,7 @@ app.MapPut("/institucion/{id}", async (
         $"Institución actualizada - Anterior: {JsonSerializer.Serialize(registroAnterior)}, Actual: {JsonSerializer.Serialize(registroActual)}"
     );
 
-    return Results.Ok(new { idInstitucion = institucion.IdInstitucion, nombre = institucion.Nombre });
+    return Results.Ok(institucionActualizada);
 })
 .WithName("ActualizarInstitucion")
 .WithOpenApi();
@@ -136,12 +149,14 @@ app.MapDelete("/institucion/{id}", async (
     var registroEliminado = new
     {
         institucion.IdInstitucion,
-        institucion.Nombre
+        institucion.Nombre,
+        institucion.FechaCreacion,
+        institucion.FechaModificacion,
+        institucion.Activo
     };
 
     await repository.EliminarAsync(id);
 
-    // Obtener usuario del token
     var usuario = await autenticacionService.ObtenerUsuarioDelTokenAsync(authorization) ?? "sistema";
 
     await bitacoraService.RegistrarAsync(
@@ -166,7 +181,6 @@ app.MapGet("/institucion", async (
 
     var instituciones = await repository.ObtenerTodosAsync();
 
-    // Obtener usuario del token
     var usuario = await autenticacionService.ObtenerUsuarioDelTokenAsync(authorization) ?? "sistema";
 
     await bitacoraService.RegistrarAsync(
@@ -174,14 +188,7 @@ app.MapGet("/institucion", async (
         "El usuario consulta instituciones"
     );
 
-    return Results.Ok(instituciones.Select(i => new
-    {
-        i.IdInstitucion,
-        i.Nombre,
-        i.FechaCreacion,
-        i.FechaModificacion,
-        i.Activo
-    }));
+    return Results.Ok(instituciones);
 })
 .WithName("ObtenerTodasInstituciones")
 .WithOpenApi();
@@ -201,7 +208,6 @@ app.MapGet("/institucion/{id}", async (
     if (institucion == null)
         return Results.NotFound(new { error = "Institución no encontrada" });
 
-    // Obtener usuario del token
     var usuario = await autenticacionService.ObtenerUsuarioDelTokenAsync(authorization) ?? "sistema";
 
     await bitacoraService.RegistrarAsync(
@@ -209,14 +215,7 @@ app.MapGet("/institucion/{id}", async (
         "El usuario consulta institución"
     );
 
-    return Results.Ok(new
-    {
-        institucion.IdInstitucion,
-        institucion.Nombre,
-        institucion.FechaCreacion,
-        institucion.FechaModificacion,
-        institucion.Activo
-    });
+    return Results.Ok(institucion);
 })
 .WithName("ObtenerInstitucionPorId")
 .WithOpenApi();

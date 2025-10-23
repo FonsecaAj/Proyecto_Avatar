@@ -64,17 +64,23 @@ app.MapPost("/usuario", async (
 
     var emailCreado = await repository.CrearAsync(usuario);
 
+    // Obtener el usuario recién creado con todas sus propiedades
+    var usuarioCreado = await repository.ObtenerPorEmailAsync(emailCreado);
+
+    if (usuarioCreado == null)
+        return Results.Problem("Error al recuperar el usuario creado");
+
+    // Preparar objeto para bitácora
     var nuevoRegistro = new
     {
-        usuario.Email,
-        usuario.IdTipoIdentificacion,
-        usuario.Identificacion,
-        usuario.Nombre,
-        usuario.IdRol,
+        usuarioCreado.Email,
+        usuarioCreado.IdTipoIdentificacion,
+        usuarioCreado.Identificacion,
+        usuarioCreado.Nombre,
+        usuarioCreado.IdRol,
         RolAsignado = rolAsignado.Nombre
     };
 
-    // CAMBIO: Obtener usuario del token
     var usuarioDelToken = await autenticacionService.ObtenerUsuarioDelTokenAsync(authorization) ?? "sistema";
 
     await bitacoraService.RegistrarAsync(
@@ -82,12 +88,26 @@ app.MapPost("/usuario", async (
         $"Usuario creado - {JsonSerializer.Serialize(nuevoRegistro)}"
     );
 
-    return Results.Created($"/usuario/{emailCreado}", new { email = emailCreado, nombre = usuario.Nombre, rol = rolAsignado.Nombre });
+    // Retornar objeto completo según REST
+    var response = new
+    {
+        usuarioCreado.Email,
+        usuarioCreado.IdTipoIdentificacion,
+        usuarioCreado.Identificacion,
+        usuarioCreado.Nombre,
+        usuarioCreado.IdRol,
+        RolNombre = rolAsignado.Nombre,
+        usuarioCreado.FechaCreacion,
+        usuarioCreado.FechaModificacion,
+        usuarioCreado.Activo
+    };
+
+    return Results.Created($"/usuario/{emailCreado}", response);
 })
 .WithName("CrearUsuario")
 .WithOpenApi();
 
-// PUT /usuario/{email} - Modificar usuario
+// PUT /usuario/{email} - Modificar usuario (REST compliant)
 app.MapPut("/usuario/{email}", async (
     string email,
     [FromHeader(Name = "Authorization")] string? authorization,
@@ -135,16 +155,21 @@ app.MapPut("/usuario/{email}", async (
 
     await repository.ActualizarAsync(usuario);
 
+    // Obtener el usuario actualizado con todas sus propiedades
+    var usuarioActualizado = await repository.ObtenerPorEmailAsync(email);
+
+    if (usuarioActualizado == null)
+        return Results.Problem("Error al recuperar el usuario actualizado");
+
     var registroActual = new
     {
-        usuario.Email,
-        usuario.IdTipoIdentificacion,
-        usuario.Identificacion,
-        usuario.Nombre,
-        usuario.IdRol
+        usuarioActualizado.Email,
+        usuarioActualizado.IdTipoIdentificacion,
+        usuarioActualizado.Identificacion,
+        usuarioActualizado.Nombre,
+        usuarioActualizado.IdRol
     };
 
-    // CAMBIO: Obtener usuario del token
     var usuarioDelToken = await autenticacionService.ObtenerUsuarioDelTokenAsync(authorization) ?? "sistema";
 
     await bitacoraService.RegistrarAsync(
@@ -152,7 +177,21 @@ app.MapPut("/usuario/{email}", async (
         $"Usuario actualizado - Anterior: {JsonSerializer.Serialize(registroAnterior)}, Actual: {JsonSerializer.Serialize(registroActual)}"
     );
 
-    return Results.Ok(new { email = usuario.Email, nombre = usuario.Nombre, rol = rolAsignado.Nombre });
+    // Retornar objeto completo según REST
+    var response = new
+    {
+        usuarioActualizado.Email,
+        usuarioActualizado.IdTipoIdentificacion,
+        usuarioActualizado.Identificacion,
+        usuarioActualizado.Nombre,
+        usuarioActualizado.IdRol,
+        RolNombre = rolAsignado.Nombre,
+        usuarioActualizado.FechaCreacion,
+        usuarioActualizado.FechaModificacion,
+        usuarioActualizado.Activo
+    };
+
+    return Results.Ok(response);
 })
 .WithName("ActualizarUsuario")
 .WithOpenApi();

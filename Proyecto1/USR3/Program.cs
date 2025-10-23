@@ -52,10 +52,15 @@ app.MapPost("/parametro", async (
     };
     await repository.CrearAsync(parametro);
 
+    // Obtener el registro completo con las fechas generadas
+    var parametroCreado = await repository.ObtenerPorIdAsync(parametro.IdParametro);
+
     var nuevoRegistro = new
     {
-        parametro.IdParametro,
-        parametro.Valor
+        parametroCreado.IdParametro,
+        parametroCreado.Valor,
+        parametroCreado.FechaCreacion,
+        parametroCreado.FechaModificacion
     };
 
     await bitacoraService.RegistrarAsync(
@@ -63,8 +68,7 @@ app.MapPost("/parametro", async (
         $"Parámetro creado - {JsonSerializer.Serialize(nuevoRegistro)}"
     );
 
-    return Results.Created($"/parametro/{parametro.IdParametro}",
-        new { idParametro = parametro.IdParametro, valor = parametro.Valor });
+    return Results.Created($"/parametro/{parametroCreado.IdParametro}", parametroCreado);
 })
 .WithName("CrearParametro")
 .WithOpenApi();
@@ -97,7 +101,9 @@ app.MapPut("/parametro/{id}", async (
     var registroAnterior = new
     {
         parametroExistente.IdParametro,
-        parametroExistente.Valor
+        parametroExistente.Valor,
+        parametroExistente.FechaCreacion,
+        parametroExistente.FechaModificacion
     };
 
     var parametro = new Parametro
@@ -107,10 +113,15 @@ app.MapPut("/parametro/{id}", async (
     };
     await repository.ActualizarAsync(parametro);
 
+    // Obtener el registro completo actualizado
+    var parametroActualizado = await repository.ObtenerPorIdAsync(parametro.IdParametro);
+
     var registroActual = new
     {
-        parametro.IdParametro,
-        parametro.Valor
+        parametroActualizado.IdParametro,
+        parametroActualizado.Valor,
+        parametroActualizado.FechaCreacion,
+        parametroActualizado.FechaModificacion
     };
 
     await bitacoraService.RegistrarAsync(
@@ -118,7 +129,7 @@ app.MapPut("/parametro/{id}", async (
         $"Parámetro actualizado - Anterior: {JsonSerializer.Serialize(registroAnterior)}, Actual: {JsonSerializer.Serialize(registroActual)}"
     );
 
-    return Results.Ok(new { idParametro = parametro.IdParametro, valor = parametro.Valor });
+    return Results.Ok(parametroActualizado);
 })
 .WithName("ActualizarParametro")
 .WithOpenApi();
@@ -143,7 +154,9 @@ app.MapDelete("/parametro/{id}", async (
     var registroEliminado = new
     {
         parametro.IdParametro,
-        parametro.Valor
+        parametro.Valor,
+        parametro.FechaCreacion,
+        parametro.FechaModificacion
     };
 
     await repository.EliminarAsync(id.ToUpper());

@@ -52,12 +52,18 @@ app.MapPost("/carrera", async (
 
     var id = await repository.CrearAsync(carrera);
 
+    // Obtener el registro completo con las fechas generadas
+    var carreraCreada = await repository.ObtenerPorIdAsync(id);
+
     var nuevoRegistro = new
     {
-        IdCarrera = id,
-        carrera.Nombre,
-        carrera.IdInstitucion,
-        carrera.IdDirector
+        carreraCreada.IdCarrera,
+        carreraCreada.Nombre,
+        carreraCreada.IdInstitucion,
+        carreraCreada.IdDirector,
+        carreraCreada.FechaCreacion,
+        carreraCreada.FechaModificacion,
+        carreraCreada.Activo
     };
 
     var usuario = await autenticacionService.ObtenerUsuarioDelTokenAsync(authorization) ?? "sistema";
@@ -67,7 +73,7 @@ app.MapPost("/carrera", async (
         $"Carrera creada - {JsonSerializer.Serialize(nuevoRegistro)}"
     );
 
-    return Results.Created($"/carrera/{id}", new { idCarrera = id, nombre = carrera.Nombre });
+    return Results.Created($"/carrera/{id}", carreraCreada);
 })
 .WithName("CrearCarrera")
 .WithOpenApi();
@@ -99,7 +105,10 @@ app.MapPut("/carrera/{id}", async (
         carreraExistente.IdCarrera,
         carreraExistente.Nombre,
         carreraExistente.IdInstitucion,
-        carreraExistente.IdDirector
+        carreraExistente.IdDirector,
+        carreraExistente.FechaCreacion,
+        carreraExistente.FechaModificacion,
+        carreraExistente.Activo
     };
 
     var carrera = new Carrera
@@ -112,12 +121,18 @@ app.MapPut("/carrera/{id}", async (
 
     await repository.ActualizarAsync(carrera);
 
+    // Obtener el registro completo actualizado
+    var carreraActualizada = await repository.ObtenerPorIdAsync(id);
+
     var registroActual = new
     {
-        carrera.IdCarrera,
-        carrera.Nombre,
-        carrera.IdInstitucion,
-        carrera.IdDirector
+        carreraActualizada.IdCarrera,
+        carreraActualizada.Nombre,
+        carreraActualizada.IdInstitucion,
+        carreraActualizada.IdDirector,
+        carreraActualizada.FechaCreacion,
+        carreraActualizada.FechaModificacion,
+        carreraActualizada.Activo
     };
 
     var usuario = await autenticacionService.ObtenerUsuarioDelTokenAsync(authorization) ?? "sistema";
@@ -127,7 +142,7 @@ app.MapPut("/carrera/{id}", async (
         $"Carrera actualizada - Anterior: {JsonSerializer.Serialize(registroAnterior)}, Actual: {JsonSerializer.Serialize(registroActual)}"
     );
 
-    return Results.Ok(new { idCarrera = carrera.IdCarrera, nombre = carrera.Nombre });
+    return Results.Ok(carreraActualizada);
 })
 .WithName("ActualizarCarrera")
 .WithOpenApi();
@@ -152,7 +167,10 @@ app.MapDelete("/carrera/{id}", async (
         carrera.IdCarrera,
         carrera.Nombre,
         carrera.IdInstitucion,
-        carrera.IdDirector
+        carrera.IdDirector,
+        carrera.FechaCreacion,
+        carrera.FechaModificacion,
+        carrera.Activo
     };
 
     await repository.EliminarAsync(id);
@@ -188,16 +206,7 @@ app.MapGet("/carrera", async (
         "El usuario consulta carreras"
     );
 
-    return Results.Ok(carreras.Select(c => new
-    {
-        c.IdCarrera,
-        c.Nombre,
-        c.IdInstitucion,
-        c.IdDirector,
-        c.FechaCreacion,
-        c.FechaModificacion,
-        c.Activo
-    }));
+    return Results.Ok(carreras);
 })
 .WithName("ObtenerTodasCarreras")
 .WithOpenApi();
@@ -224,16 +233,7 @@ app.MapGet("/carrera/{id}", async (
         "El usuario consulta carrera"
     );
 
-    return Results.Ok(new
-    {
-        carrera.IdCarrera,
-        carrera.Nombre,
-        carrera.IdInstitucion,
-        carrera.IdDirector,
-        carrera.FechaCreacion,
-        carrera.FechaModificacion,
-        carrera.Activo
-    });
+    return Results.Ok(carrera);
 })
 .WithName("ObtenerCarreraPorId")
 .WithOpenApi();
@@ -258,16 +258,7 @@ app.MapGet("/carrera/institucion/{idInstitucion}", async (
         "El usuario consulta carreras por institución"
     );
 
-    return Results.Ok(carreras.Select(c => new
-    {
-        c.IdCarrera,
-        c.Nombre,
-        c.IdInstitucion,
-        c.IdDirector,
-        c.FechaCreacion,
-        c.FechaModificacion,
-        c.Activo
-    }));
+    return Results.Ok(carreras);
 })
 .WithName("ObtenerCarrerasPorInstitucion")
 .WithOpenApi();

@@ -49,10 +49,15 @@ app.MapPost("/rol", async (
     var rol = new Rol { Nombre = dto.Nombre.Trim() };
     var id = await repository.CrearAsync(rol);
 
+    // Obtener el registro completo con las fechas generadas
+    var rolCreado = await repository.ObtenerPorIdAsync(id);
+
     var nuevoRegistro = new
     {
-        IdRol = id,
-        rol.Nombre
+        rolCreado.IdRol,
+        rolCreado.Nombre,
+        rolCreado.FechaCreacion,
+        rolCreado.FechaModificacion
     };
 
     await bitacoraService.RegistrarAsync(
@@ -60,7 +65,7 @@ app.MapPost("/rol", async (
         $"Rol creado - {JsonSerializer.Serialize(nuevoRegistro)}"
     );
 
-    return Results.Created($"/rol/{id}", new { id, nombre = rol.Nombre });
+    return Results.Created($"/rol/{id}", rolCreado);
 })
 .WithName("CrearRol")
 .WithOpenApi();
@@ -95,16 +100,23 @@ app.MapPut("/rol/{id}", async (
     var registroAnterior = new
     {
         rolExistente.IdRol,
-        rolExistente.Nombre
+        rolExistente.Nombre,
+        rolExistente.FechaCreacion,
+        rolExistente.FechaModificacion
     };
 
     var rol = new Rol { IdRol = id, Nombre = dto.Nombre.Trim() };
     await repository.ActualizarAsync(rol);
 
+    // Obtener el registro completo actualizado
+    var rolActualizado = await repository.ObtenerPorIdAsync(id);
+
     var registroActual = new
     {
-        rol.IdRol,
-        rol.Nombre
+        rolActualizado.IdRol,
+        rolActualizado.Nombre,
+        rolActualizado.FechaCreacion,
+        rolActualizado.FechaModificacion
     };
 
     await bitacoraService.RegistrarAsync(
@@ -112,7 +124,7 @@ app.MapPut("/rol/{id}", async (
         $"Rol actualizado - Anterior: {JsonSerializer.Serialize(registroAnterior)}, Actual: {JsonSerializer.Serialize(registroActual)}"
     );
 
-    return Results.Ok(new { id = rol.IdRol, nombre = rol.Nombre });
+    return Results.Ok(rolActualizado);
 })
 .WithName("ActualizarRol")
 .WithOpenApi();
@@ -137,7 +149,9 @@ app.MapDelete("/rol/{id}", async (
     var registroEliminado = new
     {
         rol.IdRol,
-        rol.Nombre
+        rol.Nombre,
+        rol.FechaCreacion,
+        rol.FechaModificacion
     };
 
     await repository.EliminarAsync(id);

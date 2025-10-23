@@ -48,10 +48,15 @@ app.MapPost("/modulo", async (
     var modulo = new Modulo { Nombre = dto.Nombre.Trim() };
     var id = await repository.CrearAsync(modulo);
 
+    // Obtener el registro completo con las fechas generadas
+    var moduloCreado = await repository.ObtenerPorIdAsync(id);
+
     var nuevoRegistro = new
     {
-        IdModulo = id,
-        modulo.Nombre
+        moduloCreado.IdModulo,
+        moduloCreado.Nombre,
+        moduloCreado.FechaCreacion,
+        moduloCreado.FechaModificacion
     };
 
     await bitacoraService.RegistrarAsync(
@@ -59,7 +64,7 @@ app.MapPost("/modulo", async (
         $"Módulo creado - {JsonSerializer.Serialize(nuevoRegistro)}"
     );
 
-    return Results.Created($"/modulo/{id}", new { id, nombre = modulo.Nombre });
+    return Results.Created($"/modulo/{id}", moduloCreado);
 })
 .WithName("CrearModulo")
 .WithOpenApi();
@@ -93,16 +98,23 @@ app.MapPut("/modulo/{id}", async (
     var registroAnterior = new
     {
         moduloExistente.IdModulo,
-        moduloExistente.Nombre
+        moduloExistente.Nombre,
+        moduloExistente.FechaCreacion,
+        moduloExistente.FechaModificacion
     };
 
     var modulo = new Modulo { IdModulo = id, Nombre = dto.Nombre.Trim() };
     await repository.ActualizarAsync(modulo);
 
+    // Obtener el registro completo actualizado
+    var moduloActualizado = await repository.ObtenerPorIdAsync(id);
+
     var registroActual = new
     {
-        modulo.IdModulo,
-        modulo.Nombre
+        moduloActualizado.IdModulo,
+        moduloActualizado.Nombre,
+        moduloActualizado.FechaCreacion,
+        moduloActualizado.FechaModificacion
     };
 
     await bitacoraService.RegistrarAsync(
@@ -110,7 +122,7 @@ app.MapPut("/modulo/{id}", async (
         $"Módulo actualizado - Anterior: {JsonSerializer.Serialize(registroAnterior)}, Actual: {JsonSerializer.Serialize(registroActual)}"
     );
 
-    return Results.Ok(new { id = modulo.IdModulo, nombre = modulo.Nombre });
+    return Results.Ok(moduloActualizado);
 })
 .WithName("ActualizarModulo")
 .WithOpenApi();
@@ -135,7 +147,9 @@ app.MapDelete("/modulo/{id}", async (
     var registroEliminado = new
     {
         modulo.IdModulo,
-        modulo.Nombre
+        modulo.Nombre,
+        modulo.FechaCreacion,
+        modulo.FechaModificacion
     };
 
     await repository.EliminarAsync(id);

@@ -59,15 +59,21 @@ app.MapPost("/profesor", async (
 
     var idCreado = await repository.CrearAsync(profesor);
 
+    // Obtener el registro completo con las fechas generadas
+    var profesorCreado = await repository.ObtenerPorIdAsync(idCreado);
+
     var nuevoRegistro = new
     {
-        IdProfesor = idCreado,
-        profesor.NumeroIdentificacion,
-        profesor.IdTipoIdentificacion,
-        profesor.Email,
-        profesor.NombreCompleto,
-        profesor.FechaNacimiento,
-        profesor.Telefonos
+        profesorCreado.IdProfesor,
+        profesorCreado.NumeroIdentificacion,
+        profesorCreado.IdTipoIdentificacion,
+        profesorCreado.Email,
+        profesorCreado.NombreCompleto,
+        profesorCreado.FechaNacimiento,
+        profesorCreado.Telefonos,
+        profesorCreado.FechaCreacion,
+        profesorCreado.FechaModificacion,
+        profesorCreado.Activo
     };
 
     var usuarioDelToken = await autenticacionService.ObtenerUsuarioDelTokenAsync(authorization) ?? "sistema";
@@ -77,7 +83,7 @@ app.MapPost("/profesor", async (
         $"Profesor creado - {JsonSerializer.Serialize(nuevoRegistro)}"
     );
 
-    return Results.Created($"/profesor/{idCreado}", new { idProfesor = idCreado, nombre = profesor.NombreCompleto });
+    return Results.Created($"/profesor/{idCreado}", profesorCreado);
 })
 .WithName("CrearProfesor")
 .WithOpenApi();
@@ -112,7 +118,10 @@ app.MapPut("/profesor/{id}", async (
         profesorExistente.Email,
         profesorExistente.NombreCompleto,
         profesorExistente.FechaNacimiento,
-        profesorExistente.Telefonos
+        profesorExistente.Telefonos,
+        profesorExistente.FechaCreacion,
+        profesorExistente.FechaModificacion,
+        profesorExistente.Activo
     };
 
     var profesor = new Profesor
@@ -128,15 +137,21 @@ app.MapPut("/profesor/{id}", async (
 
     await repository.ActualizarAsync(profesor);
 
+    // Obtener el registro completo actualizado
+    var profesorActualizado = await repository.ObtenerPorIdAsync(id);
+
     var registroActual = new
     {
-        profesor.IdProfesor,
-        profesor.NumeroIdentificacion,
-        profesor.IdTipoIdentificacion,
-        profesor.Email,
-        profesor.NombreCompleto,
-        profesor.FechaNacimiento,
-        profesor.Telefonos
+        profesorActualizado.IdProfesor,
+        profesorActualizado.NumeroIdentificacion,
+        profesorActualizado.IdTipoIdentificacion,
+        profesorActualizado.Email,
+        profesorActualizado.NombreCompleto,
+        profesorActualizado.FechaNacimiento,
+        profesorActualizado.Telefonos,
+        profesorActualizado.FechaCreacion,
+        profesorActualizado.FechaModificacion,
+        profesorActualizado.Activo
     };
 
     var usuarioDelToken = await autenticacionService.ObtenerUsuarioDelTokenAsync(authorization) ?? "sistema";
@@ -146,7 +161,7 @@ app.MapPut("/profesor/{id}", async (
         $"Profesor actualizado - Anterior: {JsonSerializer.Serialize(registroAnterior)}, Actual: {JsonSerializer.Serialize(registroActual)}"
     );
 
-    return Results.Ok(new { idProfesor = profesor.IdProfesor, nombre = profesor.NombreCompleto });
+    return Results.Ok(profesorActualizado);
 })
 .WithName("ActualizarProfesor")
 .WithOpenApi();
@@ -174,7 +189,10 @@ app.MapDelete("/profesor/{id}", async (
         profesor.Email,
         profesor.NombreCompleto,
         profesor.FechaNacimiento,
-        profesor.Telefonos
+        profesor.Telefonos,
+        profesor.FechaCreacion,
+        profesor.FechaModificacion,
+        profesor.Activo
     };
 
     await repository.EliminarAsync(id);
@@ -210,19 +228,7 @@ app.MapGet("/profesor", async (
         "El usuario consulta profesores"
     );
 
-    return Results.Ok(profesores.Select(p => new
-    {
-        p.IdProfesor,
-        p.NumeroIdentificacion,
-        p.IdTipoIdentificacion,
-        p.Email,
-        p.NombreCompleto,
-        p.FechaNacimiento,
-        p.Telefonos,
-        p.FechaCreacion,
-        p.FechaModificacion,
-        p.Activo
-    }));
+    return Results.Ok(profesores);
 })
 .WithName("ObtenerTodosProfesores")
 .WithOpenApi();
@@ -249,19 +255,7 @@ app.MapGet("/profesor/{id}", async (
         "El usuario consulta profesor"
     );
 
-    return Results.Ok(new
-    {
-        profesor.IdProfesor,
-        profesor.NumeroIdentificacion,
-        profesor.IdTipoIdentificacion,
-        profesor.Email,
-        profesor.NombreCompleto,
-        profesor.FechaNacimiento,
-        profesor.Telefonos,
-        profesor.FechaCreacion,
-        profesor.FechaModificacion,
-        profesor.Activo
-    });
+    return Results.Ok(profesor);
 })
 .WithName("ObtenerProfesorPorId")
 .WithOpenApi();
