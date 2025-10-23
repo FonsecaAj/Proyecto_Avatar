@@ -1,11 +1,25 @@
-﻿namespace GEN1.Entities
+﻿namespace Mod_General.Entities
 {
     public class Bitacora
     {
-        public int IdBitacora { get; set; }
-        public DateTime FechaRegistro { get; set; }
+        public int ID_Bitacora { get; set; }
+        public DateTime Fecha_Registro { get; set; }
         public string Usuario { get; set; } = string.Empty;
         public string Descripcion { get; set; } = string.Empty;
-        public string TipoAccion { get; set; } = string.Empty;
+        public string? Tipo_Accion { get; set; } // (nullable)
+    }
+
+    public class BitacoraRequest
+    {
+        public string Usuario { get; set; } = string.Empty;
+        public string? Tipo_Accion { get; set; }// "INSERT", "UPDATE", "DELETE", "SELECT", "ERROR"
+        public string Descripcion { get; set; } = string.Empty; // JSON o texto
+    }
+
+    public class BusinessLogicResponse
+    {
+        public int StatusCode { get; set; }
+        public string Message { get; set; } = string.Empty;
+        public object? ResponseObject { get; set; }
     }
 }
